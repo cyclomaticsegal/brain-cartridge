@@ -3,7 +3,7 @@ name: brain-bootstrap
 description: "Personal knowledge base engine. This skill MUST trigger on the very first message in any new session — regardless of what the user says, including greetings like 'hello', 'hi', 'what is this', 'help', 'get started', or any casual opener. It must also trigger on any substantive task: analysing a topic, evaluating a claim, forming a strategy, assessing a market, writing about any domain the user has ingested material on, or any question where the user's accumulated knowledge base would sharpen the answer. Also triggers on all brain-specific operations: brain, brain.py, search my brain, ingest, knowledge base search, hybrid search, RAG, knowledge graph, export-graph, or any reference to querying the knowledge base. When in doubt, trigger — the bootstrap is idempotent."
 ---
 
-# Personal Knowledge Base — Brain Operating System
+# Personal Knowledge Base: Brain Operating System
 
 This skill has three layers. Execute them in order.
 
@@ -19,7 +19,7 @@ bash /sessions/<session-name>/mnt/<workspace-folder>/bootstrap.sh
 
 Replace `<session-name>` with the current session path from the system prompt (e.g. `charming-purple-fox`). Replace `<workspace-folder>` with the name of the working folder as it appears in the mount path. This takes ~30 seconds and is idempotent.
 
-After bootstrap, the brain database (`brain.db`) auto-restores from the workspace — searches work immediately without re-ingesting.
+After bootstrap, the brain database (`brain.db`) auto-restores from the workspace, so searches work immediately without re-ingesting.
 
 ### First-run detection
 
@@ -33,16 +33,16 @@ If the output shows **0 sources and 0 nodes**, this is a fresh brain that has ne
 
 > **Welcome to your personal knowledge base.**
 >
-> Your brain is set up and ready, but it's empty — there's nothing in it yet. Here's how to get started:
+> Your brain is set up and ready, but it's empty. There's nothing in it yet. Here's how to get started:
 >
 > 1. **Add material.** Drop `.md`, `.txt`, or `.pdf` files into the `inbox/` folder in your working directory.
 > 2. **Tell me to process them.** Say something like "process my inbox" or "ingest the new files" and I'll chunk, embed, and index everything.
 > 3. **Ask me anything** about your ingested material. I'll search your brain automatically.
 > 4. **Explore your knowledge graph.** Open `graph-explorer.html` in a browser to see how your knowledge connects visually.
 >
-> As your brain grows, you can build **axioms** — your analytical frameworks — that I'll use as my default lens for reasoning with you. The README.md in your folder has the full user manual.
+> As your brain grows, you can build **axioms** (your analytical frameworks) that I'll use as my default lens for reasoning with you. The README.md in your folder has the full user manual.
 >
-> But first — **what would you like to call this brain?** Give it a name and I'll remember it. It can be anything: "The Workshop", "Atlas", "My Research Brain", whatever feels right.
+> **What would you like to call this brain?** Give it a name and I'll remember it. It can be anything: "The Workshop", "Atlas", "My Research Brain", whatever feels right.
 
 After presenting the welcome message, **do not proceed to Layer 2 or Layer 3**. The user has no axioms yet and there is nothing to search. Wait for the user's next message.
 
@@ -69,7 +69,7 @@ import brain; brain.export_db_to_workspace()
 "
 ```
 
-Confirm the name back to the user: "Done — this brain is now called **<THE_NAME>**."
+Confirm the name back to the user: "Done. This brain is now called **<THE_NAME>**."
 
 ### First-run step 2: Axiom seeding
 
@@ -77,7 +77,7 @@ After confirming the brain name, ask the user about their analytical frameworks:
 
 > **Now let's set up your analytical lens.**
 >
-> As you feed material into this brain, I'll use your frameworks to sharpen every answer. These aren't predictions or conclusions — they're the lenses you think through.
+> As you feed material into this brain, I'll use your frameworks to sharpen every answer. These aren't predictions or conclusions. They're the lenses you think through.
 >
 > **Do you already have frameworks or intellectual interests you'd like me to start with?** For example: "I think about everything through network effects and energy constraints" or "I'm interested in innovation theory and political economy."
 >
@@ -123,7 +123,7 @@ cat /sessions/<session-name>/mnt/<workspace-folder>/AXIOMS.md
 
 If the file has content under "Your frameworks", load those frameworks into working context. They are the default analytical lens for any substantive question. When answering, apply these lenses and cite which frameworks informed the reasoning.
 
-If the file has no user-added frameworks yet (only the template), proceed without axioms. The brain still works — it just doesn't have a personalised analytical lens yet.
+If the file has no user-added frameworks yet (only the template), proceed without axioms. The brain still works; it just doesn't have a personalised analytical lens yet.
 
 ### Building axioms: two paths
 
@@ -140,8 +140,8 @@ The user approves, refines, or rejects. **Claude never adds axioms without expli
 Each axiom entry in AXIOMS.md should contain:
 
 1. **Framework name** as a heading.
-2. **The lens** — 2-3 sentences describing how to apply this framework. Not a definition of the concept, but an instruction to Claude: what to look for, what questions to ask, when this lens matters.
-3. **Sources** — updated as the user ingests material relevant to this framework. Format: `Sources: S01, S05, S12` (referencing brain.db source IDs).
+2. **The lens** - 2-3 sentences describing how to apply this framework. Not a definition of the concept, but an instruction to Claude: what to look for, what questions to ask, when this lens matters.
+3. **Sources** - updated as the user ingests material relevant to this framework. Format: `Sources: S01, S05, S12` (referencing brain.db source IDs).
 
 The axiom is a signpost. The brain holds the depth. When Claude needs detail on a framework, it searches brain.db using the axiom as the query guide.
 
@@ -179,7 +179,7 @@ Cross-skill context, general training knowledge, web search results, and prior s
 
 ## Layer 3: Retrieval Decision Tree
 
-When a substantive question arrives — analysis, strategy, evaluation, writing, or anything where domain knowledge matters — choose the right retrieval method:
+When a substantive question arrives (analysis, strategy, evaluation, writing, or anything where domain knowledge matters), choose the right retrieval method:
 
 ### 1. Use what's already in context
 
@@ -221,7 +221,7 @@ For multi-faceted questions, run multiple searches with different query terms to
 ```bash
 BRAIN="/sessions/<session-name>/mnt/<workspace-folder>/brain.py"
 
-# Search (primary operation — uses existing brain.db)
+# Search (primary operation, uses existing brain.db)
 python3 $BRAIN search "your query here"
 
 # Process inbox (recursive scan, assign IDs, ingest, cleanup)
@@ -245,7 +245,7 @@ python3 $BRAIN update-html
 
 ### Graph Architecture
 
-The knowledge graph lives exclusively in brain.db (nodes and edges tables). GRAPH.json and graph-explorer.html are derived exports — never edit them directly.
+The knowledge graph lives exclusively in brain.db (nodes and edges tables). GRAPH.json and graph-explorer.html are derived exports. Never edit them directly.
 
 To mutate the graph programmatically:
 ```python
@@ -265,7 +265,7 @@ brain.export_graph_json()  # regenerates GRAPH.json + graph-explorer.html
 ### Getting Started
 
 1. Drop documents (`.md`, `.txt`, `.pdf`) into the `inbox/` folder.
-2. Run `python3 $BRAIN inbox` — this assigns source IDs, moves files to `sources/`, ingests chunks, builds embeddings, and updates the graph.
+2. Run `python3 $BRAIN inbox`. This assigns source IDs, moves files to `sources/`, ingests chunks, builds embeddings, and updates the graph.
 3. Run `python3 $BRAIN search "a question about your material"` to test.
 4. Open `graph-explorer.html` to see your knowledge graph visually.
 5. As patterns emerge, build your analytical frameworks in AXIOMS.md (see Layer 2).

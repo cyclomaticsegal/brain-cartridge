@@ -55,7 +55,7 @@ The SKILL.md governs Claude's judgment: when to suggest corrections, how to synt
 
 ---
 
-## brain.db — Single Source of Truth
+## brain.db: Single Source of Truth
 
 All system state lives in the SQLite database.
 

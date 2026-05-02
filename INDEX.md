@@ -1,4 +1,4 @@
-# Knowledge Base — Index
+# Knowledge Base Index
 
 > A living hierarchical map of themes, concepts, and source materials.
 > Last updated: not yet | Nodes: 0 | Edges: 0 | Sources: 0 | Chunks: 0

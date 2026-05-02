@@ -3,9 +3,9 @@ name: demo-brain
 description: "Build a demo brain with sample data to see the system in action. Use when the user says /demo-brain, 'run the demo', 'show me a demo', 'demo prism', 'try the demo', 'load demo data', or asks to see the brain working with example content."
 ---
 
-# Demo Brain — Sample Data Ingestion
+# Demo Brain: Sample Data Ingestion
 
-This skill populates the brain with sample content across three domains so the user can see the full system working: ingestion, search, knowledge graph, and axioms. It's a guided tour, not a permanent setup — the user can reset afterward and build their own brain.
+This skill populates the brain with sample content across three domains so the user can see the full system working: ingestion, search, knowledge graph, and axioms. It's a guided tour, not a permanent setup. The user can reset afterwards and build their own brain.
 
 ---
 
@@ -46,9 +46,9 @@ Before ingesting, present this message:
 >
 > I found 6 sample documents in the `demo/` folder covering three domains:
 >
-> - **AI & Frontier Lab Economics** — scaling laws, lab competition, agents, and the application layer
-> - **Geopolitics of AI** — chip supply chains, export controls, sovereign AI, and regulation
-> - **Energy & Compute Infrastructure** — the energy bottleneck, data centres, grid constraints, and cooling
+> - **AI & Frontier Lab Economics** - scaling laws, lab competition, agents, and the application layer
+> - **Geopolitics of AI** - chip supply chains, export controls, sovereign AI, and regulation
+> - **Energy & Compute Infrastructure** - the energy bottleneck, data centres, grid constraints, and cooling
 >
 > I'll copy these into the inbox, ingest them, build the knowledge graph, and set up some starter axioms based on the content. This takes about a minute.
 >
@@ -139,11 +139,11 @@ Present the proposed axioms first:
 
 > Based on the demo content, here are three starter axioms I'd suggest:
 >
-> **1. Energy as Constraint** — Intelligence per unit of energy is the fundamental efficiency metric. When analysing any AI system, platform, or infrastructure investment, ask: what are the energy requirements, and do they scale? Consider Jevons' paradox — efficiency improvements tend to increase total consumption, not reduce it.
+> **1. Energy as Constraint.** Intelligence per unit of energy is the fundamental efficiency metric. When analysing any AI system, platform, or infrastructure investment, ask: what are the energy requirements, and do they scale? Consider Jevons' paradox: efficiency improvements tend to increase total consumption, not reduce it.
 >
-> **2. Supply Chain Chokepoints** — Concentrated dependencies create strategic vulnerability. When analysing any technology market, identify the chokepoints: who controls the critical nodes in the supply chain? TSMC in chips, ASML in lithography, and grid operators in power are current examples. Look for single points of failure.
+> **2. Supply Chain Chokepoints.** Concentrated dependencies create strategic vulnerability. When analysing any technology market, identify the chokepoints: who controls the critical nodes in the supply chain? TSMC in chips, ASML in lithography, and grid operators in power are current examples. Look for single points of failure.
 >
-> **3. Value Migration from Technology to Distribution** — Core technologies commoditise; value migrates to distribution, ecosystem, and switching costs. When evaluating any technology company or platform, ask: is the moat in the technology itself, or in the distribution and integration layer above it?
+> **3. Value Migration from Technology to Distribution.** Core technologies commoditise; value migrates to distribution, ecosystem, and switching costs. When evaluating any technology company or platform, ask: is the moat in the technology itself, or in the distribution and integration layer above it?
 >
 > Want me to add these to your axioms file?
 
@@ -161,7 +161,7 @@ Each axiom should follow the format in AXIOMS.md:
 
 Intelligence per unit of energy is the fundamental efficiency metric. When analysing
 any AI system, platform, or infrastructure investment, ask: what are the energy
-requirements, and do they scale? Consider Jevons' paradox — efficiency improvements
+requirements, and do they scale? Consider Jevons' paradox: efficiency improvements
 tend to increase total consumption, not reduce it.
 
 Sources: S05, S06
@@ -170,21 +170,21 @@ Sources: S05, S06
 Also add cross-domain bridges:
 
 ```markdown
-Energy constraints shape compute supply chains — every chip needs power, and power
+Energy constraints shape compute supply chains. Every chip needs power, and power
 availability determines where AI infrastructure gets built.
 
-Supply chain concentration amplifies geopolitical leverage — whoever controls chip
+Supply chain concentration amplifies geopolitical leverage. Whoever controls chip
 fabrication and energy supply controls the pace of AI development.
 
-Technology commoditisation drives the scramble for distribution — as models converge
+Technology commoditisation drives the scramble for distribution. As models converge
 in quality, the competition shifts to infrastructure, integration, and energy access.
 ```
 
 And one design principle:
 
 ```markdown
-Think in systems, not variables. These three domains — AI economics, geopolitics,
-and energy — are interconnected. A change in one (e.g., new chip export controls)
+Think in systems, not variables. These three domains (AI economics, geopolitics,
+and energy) are interconnected. A change in one (e.g., new chip export controls)
 ripples through the others (compute availability, energy demand, lab economics).
 Analyse accordingly.
 ```
@@ -209,6 +209,6 @@ After everything is complete, present a summary:
 > 4. **Axioms in action:** Ask me to analyse a new AI company or product. Watch how the axioms (energy constraint, supply chain chokepoints, value migration) shape the analysis.
 >
 > **When you're ready to build your own brain:**
-> You can keep the demo content and add to it, or clear everything and start fresh. To reset, just say "clear the brain and start over" — I'll wipe the demo data and you can begin with your own material.
+> You can keep the demo content and add to it, or clear everything and start fresh. To reset, just say "clear the brain and start over" and I'll wipe the demo data and you can begin with your own material.
 >
 > The full walkthrough is in `DEMO-WALKTHROUGH.md` in your working folder.

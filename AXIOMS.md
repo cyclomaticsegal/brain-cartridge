@@ -1,4 +1,4 @@
-# Axioms — Your Analytical Frameworks
+# Axioms: Your Analytical Frameworks
 
 > This file is your intellectual operating system. Claude reads it at the start of every session and uses it as the default lens for reasoning with you. It lives in your working folder so both you and Claude can edit it.
 
@@ -10,9 +10,9 @@ An axiom is a framework you think through, not a conclusion you've reached. It t
 
 Good axioms are:
 
-- **Recurring.** You keep coming back to this idea across different topics. It's not a one-off insight — it's a pattern in how you reason.
+- **Recurring.** You keep coming back to this idea across different topics. It's not a one-off insight. It's a pattern in how you reason.
 - **Connective.** It bridges domains. The best axioms link fields that don't usually talk to each other.
-- **Actionable.** It changes what Claude looks for. "Innovation matters" is not an axiom. "Innovation is cumulative recombination, not sudden invention — look for combinatorial potential and network effects before evaluating any new technology" is.
+- **Actionable.** It changes what Claude looks for. "Innovation matters" is not an axiom. "Innovation is cumulative recombination, not sudden invention; look for combinatorial potential and network effects before evaluating any new technology" is.
 
 Axioms are not predictions, positions, or conclusions. Those belong in your brain as ingested material. Axioms are the lenses you use to *evaluate* predictions, positions, and conclusions.
 
@@ -38,7 +38,7 @@ You approve, refine, or reject. Claude never adds axioms without your explicit a
 
 ## How axioms relate to your brain
 
-Your brain (brain.db) holds the depth — the source material, chunks, embeddings, and graph connections. Your axioms hold the *instructions* — which lenses to apply and when.
+Your brain (brain.db) holds the depth: the source material, chunks, embeddings, and graph connections. Your axioms hold the *instructions*: which lenses to apply and when.
 
 When Claude encounters a substantive question:
 1. It reads your axioms (this file) to know which frameworks matter to you.
@@ -74,7 +74,7 @@ Sources: [updated as you ingest relevant material]
 
 *As your axioms grow, note the connections between them here. These are the threads Claude should actively look for when analysing any topic.*
 
-*Example: "Energy constraints shape network effects — every network has a physical substrate with scaling limits."*
+*Example: "Energy constraints shape network effects because every network has a physical substrate with scaling limits."*
 
 <!-- Add your bridges below this line -->
 
@@ -84,6 +84,6 @@ Sources: [updated as you ingest relevant material]
 
 *How you want Claude to reason. Not what to think about, but how to think.*
 
-*Examples: "Think in systems, not variables." / "Causal language over descriptive — 'X explains Y' not 'X correlates with Y.'" / "Acknowledge what is unresolved."*
+*Examples: "Think in systems, not variables." / "Causal language over descriptive: 'X explains Y' not 'X correlates with Y.'" / "Acknowledge what is unresolved."*
 
 <!-- Add your principles below this line -->
