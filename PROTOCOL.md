@@ -2,7 +2,7 @@
 
 > How the system works, how to operate it, and where the boundaries between code and judgment sit.
 
-**Version:** 1.0 (starter kit)
+**Version:** 1.0 (brain cartridge)
 
 ---
 

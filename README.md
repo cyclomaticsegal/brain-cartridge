@@ -1,4 +1,4 @@
-# Brain Starter Kit — User Manual
+# Brain Cartridge — User Manual
 
 A personal knowledge base that runs inside Claude Desktop's Cowork mode. You feed it documents, it builds a searchable brain with a knowledge graph, and Claude uses your accumulated knowledge to sharpen every answer it gives you.
 
@@ -149,7 +149,7 @@ python3 brain.py graph C11 --hops 2     # show connections within 2 hops
 
 ## Knowledge domains
 
-The engine auto-classifies each source into knowledge domains using TF-IDF similarity against domain keyword descriptions. The starter kit ships with 12 general-purpose domains:
+The engine auto-classifies each source into knowledge domains using TF-IDF similarity against domain keyword descriptions. The brain cartridge ships with 12 general-purpose domains:
 
 1. Macroeconomics & Monetary Systems
 2. AI & Machine Intelligence

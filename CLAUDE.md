@@ -1,4 +1,4 @@
-# Brain Starter Kit
+# Brain Cartridge
 
 This folder has two modes of operation depending on context.
 
@@ -14,7 +14,7 @@ Do not greet the user or respond conversationally until the brain-bootstrap skil
 
 ## Development mode (Claude Code)
 
-When this folder is opened in Claude Code, it is a **distributable product** — a starter kit that other people will download and use. Everything you do here ships to end users.
+When this folder is opened in Claude Code, it is a **distributable product** — a brain cartridge that other people will download and use. Everything you do here ships to end users.
 
 ### What this repo is
 
@@ -66,4 +66,4 @@ A self-contained personal knowledge base engine that runs inside Claude Desktop'
 
 ### This repo lives inside a parent workspace
 
-This repo (`brain-starter-kit/`) is a subfolder of a larger working directory (Frameworks of Understanding). The parent folder is NOT part of this repo. Do not reference, modify, or depend on files outside this folder. This repo must be fully self-contained.
+This repo (`brain-cartridge/`) is a subfolder of a larger working directory (Frameworks of Understanding). The parent folder is NOT part of this repo. Do not reference, modify, or depend on files outside this folder. This repo must be fully self-contained.

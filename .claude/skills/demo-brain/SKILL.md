@@ -28,7 +28,7 @@ Present this message and stop:
 > The `demo/` folder isn't in your working directory. This folder contains sample documents across three domains (AI & Frontier Labs, Geopolitics of AI, Energy & Compute Infrastructure) that the demo uses to populate your brain.
 >
 > **To get the demo data:**
-> Download the `demo/` folder from the brain starter kit repository and place it in your working directory, then run `/demo-brain` again.
+> Download the `demo/` folder from the brain cartridge repository and place it in your working directory, then run `/demo-brain` again.
 
 Do not proceed further. Wait for the user's next message.
 

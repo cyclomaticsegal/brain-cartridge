@@ -22,7 +22,7 @@ These three domains form a natural triangle: AI labs need chips, chips need ener
 
 ### Step 1: Set up your brain
 
-If you haven't already, start a Cowork task with the brain starter kit as your working folder. Say "start my brain" to trigger the bootstrap. Give it a name when prompted. You can skip the axiom seeding — the demo will handle that.
+If you haven't already, start a Cowork task with the brain cartridge as your working folder. Say "start my brain" to trigger the bootstrap. Give it a name when prompted. You can skip the axiom seeding — the demo will handle that.
 
 ### Step 2: Launch the demo
 
