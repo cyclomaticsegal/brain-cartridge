@@ -34,7 +34,10 @@ That's it. Claude clones the repo into your folder, installs dependencies, and s
 | `PROTOCOL.md` | Architecture reference. How the system is structured and why. |
 | `INDEX.md` | Snapshot of what's in your brain. Updates as you ingest material. |
 | `.claude/skills/brain-bootstrap/SKILL.md` | The behaviour layer. Tells Claude how to operate the brain, when to search, and how to manage your axioms. This is a hidden file (more on this below). |
+| `.claude/skills/cowork-dev-context/SKILL.md` | Development context for Claude Code. Covers VM constraints, FUSE mount topology, rendering rules, and testing guidance. |
+| `_models/all-MiniLM-L6-v2/` | Bundled embedding model for semantic search. ~90MB. Loaded locally by brain.py, no network download needed. |
 | `DEMO-WALKTHROUGH.md` | Step-by-step guide to the demo experience. |
+| `THIRD-PARTY-LICENSES.md` | License attribution for bundled third-party components (embedding model, libraries). |
 | `sources/` | Where ingested documents are archived after processing. |
 | `inbox/` | Drop zone for new material. Put documents here, then ingest them. |
 | `demo/` | Sample documents for the demo. Six files across three domains. Can be deleted after trying the demo. |
@@ -43,7 +46,7 @@ That's it. Claude clones the repo into your folder, installs dependencies, and s
 
 ## Prerequisites
 
-You need Claude Desktop with Cowork mode enabled. That's it. Everything else (Python packages, embedding models, database setup) is handled automatically by `bootstrap.sh`.
+You need Claude Desktop with Cowork mode enabled. That's it. The embedding model ships in the repo (`_models/`), Python packages are installed by `bootstrap.sh`, and the database initialises automatically on first run.
 
 ---
 
@@ -103,9 +106,7 @@ After ingestion, your material is searchable immediately.
 
 ### What gets ingested and what doesn't
 
-The engine skips certain directories: `_meta`, `.cache`, `__pycache__`, `predictions`, `node_modules`, `pre-built-thesis`, and `inbox` subfolders that are empty. It also skips system files like `brain.py`, `bootstrap.sh`, `PROTOCOL.md`, and `INDEX.md`.
-
-Everything in `sources/` is fair game for re-ingestion if you ever need to rebuild the database from scratch.
+The engine only reads from `sources/`. Files land there after being processed through `inbox/`. Everything else in the repo (scripts, config, the model directory) is ignored. If you ever need to rebuild the database from scratch, run `brain.py ingest` and it re-processes everything in `sources/`.
 
 ---
 
@@ -113,7 +114,7 @@ Everything in `sources/` is fair game for re-ingestion if you ever need to rebui
 
 Once you've ingested material, just ask Claude questions. The brain-bootstrap skill tells Claude when and how to search. You don't need to issue explicit commands. Claude decides whether to search based on your question.
 
-Behind the scenes, the brain uses **hybrid search**: BM25 keyword matching (via SQLite FTS5) combined with semantic vector search (via sentence-transformers or TF-IDF fallback), fused using Reciprocal Rank Fusion. This catches both exact term matches and conceptual similarity across your ingested material.
+Behind the scenes, the brain uses **hybrid search**: BM25 keyword matching (via SQLite FTS5) combined with semantic vector search (via the bundled all-MiniLM-L6-v2 embedding model), fused using Reciprocal Rank Fusion. This catches both exact term matches and conceptual similarity across your ingested material.
 
 If you want to run a search explicitly, you can ask Claude to do so, or use the command directly:
 
@@ -269,7 +270,7 @@ The session detection is dynamic. `brain.py` scans `/sessions/` to find whatever
 
 ## Troubleshooting
 
-**"bootstrap.sh failed"** This usually means a pip install timed out. Run it again. If sentence-transformers fails to install, that's fine. The engine falls back to TF-IDF automatically. Search quality is slightly lower but still functional.
+**"bootstrap.sh failed"** This usually means a pip install timed out. Run it again. The embedding model is bundled in the repo so no downloads are needed beyond the Python packages.
 
 **"No results found" when searching** Check that you've actually ingested material: run `brain.py stats`. If sources are 0, nothing has been ingested yet. Drop files in `inbox/` and run `brain.py inbox`.
 
@@ -287,8 +288,12 @@ The session detection is dynamic. `brain.py` scans `/sessions/` to find whatever
 your-brain/
 ├── .claude/
 │   └── skills/
-│       └── brain-bootstrap/
-│           └── SKILL.md          ← behaviour layer (how Claude operates the brain)
+│       ├── brain-bootstrap/
+│       │   └── SKILL.md          ← behaviour layer (how Claude operates the brain)
+│       └── cowork-dev-context/
+│           └── SKILL.md          ← development context for Claude Code
+├── _models/
+│   └── all-MiniLM-L6-v2/        ← bundled embedding model (~90MB)
 ├── CLAUDE.md                     ← session startup trigger
 ├── AXIOMS.md                     ← your analytical frameworks (editable)
 ├── brain.py                      ← engine
@@ -300,6 +305,7 @@ your-brain/
 ├── INDEX.md                      ← brain contents snapshot
 ├── README.md                     ← this file
 ├── DEMO-WALKTHROUGH.md           ← guided demo tutorial
+├── THIRD-PARTY-LICENSES.md       ← license attribution
 ├── sources/                      ← archived ingested documents
 ├── inbox/                        ← drop zone for new material
 ├── demo/                         ← sample documents for the demo

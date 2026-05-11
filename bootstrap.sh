@@ -51,8 +51,8 @@ fi
 if [ -f "${MODEL_DIR}/config.json" ] && [ -f "${MODEL_DIR}/model.safetensors" ]; then
     echo "OK: Embedding model bundled (all-MiniLM-L6-v2)"
 else
-    echo "NOTE: Embedding model not bundled. Run 'bash download-model.sh' from your"
-    echo "      terminal (outside Cowork) to download it. Using TF-IDF until then."
+    echo "WARNING: Embedding model not found in _models/all-MiniLM-L6-v2/."
+    echo "         Search will fall back to TF-IDF (keyword-based, still functional)."
 fi
 
 # Quick sanity: can brain.py parse?
