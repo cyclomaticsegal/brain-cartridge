@@ -186,7 +186,7 @@ function tickForces(nodes, edges) {
   const w = window.innerWidth, h = window.innerHeight;
   const cx = w / 2, cy = h / 2;
 
-  // Charge repulsion (O(n²) — fine for < 1000 nodes)
+  // Charge repulsion (O(n²), fine for < 1000 nodes)
   for (let i = 0; i < n; i++) {
     const a = nodes[i];
     for (let j = i + 1; j < n; j++) {
@@ -658,7 +658,7 @@ function updateLegendUI() {
 function init() {
   if (graphData.nodes.length === 0) {
     document.getElementById('empty-state').style.display = 'block';
-    document.getElementById('stats').textContent = 'Empty — ingest material to populate';
+    document.getElementById('stats').textContent = 'Empty. Ingest material to populate.';
     return;
   }
 

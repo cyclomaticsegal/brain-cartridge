@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-brain.py — Personal knowledge base engine.
+brain.py: Personal knowledge base engine.
 
 Unified SQLite storage with hybrid search (BM25 keyword + semantic vector).
 See ADR-001 for architectural rationale.
@@ -75,7 +75,7 @@ def _detect_session_dir() -> Optional[Path]:
                   if d.is_dir() and not d.name.startswith(".")]
     if len(candidates) == 1:
         return candidates[0]
-    # Multiple or zero — can't determine, fall back to workspace
+    # Multiple or zero, can't determine, fall back to workspace
     return None
 
 
@@ -106,7 +106,7 @@ def _restore_db_from_workspace():
         print(f"  Restored brain.db from workspace ({DB_EXPORT_PATH.stat().st_size / 1024:.0f} KB)")
 
 
-# Restore on import — ensures the DB is available before any operations
+# Restore on import: ensures the DB is available before any operations
 _restore_db_from_workspace()
 
 # Chunking parameters
@@ -116,9 +116,10 @@ CHUNK_CHARS = CHUNK_SIZE * 4
 OVERLAP_CHARS = CHUNK_OVERLAP * 4
 
 # Embedding model
-# Primary: sentence-transformers (requires HuggingFace download)
-# Fallback: TF-IDF from scikit-learn (no download, always available)
+# Primary: sentence-transformers with bundled model weights (no download needed)
+# Fallback: TF-IDF from scikit-learn (if sentence-transformers package unavailable)
 MODEL_NAME = "all-MiniLM-L6-v2"
+MODEL_LOCAL_DIR = BASE_DIR / "_models" / MODEL_NAME  # bundled in repo
 EMBEDDING_DIM = 384  # overridden at runtime if using TF-IDF
 EMBEDDING_BACKEND = "auto"  # "auto", "sentence-transformers", or "tfidf"
 
@@ -129,14 +130,8 @@ RRF_K = 60  # reciprocal rank fusion constant
 # Source file extensions to ingest
 INGEST_EXTENSIONS = {".md", ".txt", ".pdf"}
 
-# Directories to skip during ingestion (predictions dir handled specially)
-SKIP_DIRS = {"_meta", ".cache", "__pycache__", "predictions", "node_modules", "pre-built-thesis", "inbox"}
-
-# Files to skip
-SKIP_FILES = {"INDEX.md", "PROTOCOL.md", "PHILOSOPHICAL-PILLARS.md",
-              "brain.py", "requirements.txt",
-              "folds_client.py", "folds_orchestrator.py", "bootstrap.sh",
-              "51f-monitor.html", "51f-monitor-data.json"}
+# Note: ingestion scans sources/ only (see find_source_files).
+# No skip-list needed. Files enter sources/ via process_inbox().
 
 
 # ---------------------------------------------------------------------------
@@ -196,15 +191,30 @@ class TFIDFEmbedder:
 
 
 class SentenceTransformerEmbedder:
-    """Sentence-transformers embeddings. Requires HuggingFace model download."""
+    """Sentence-transformers embeddings using bundled model weights.
+
+    The model (all-MiniLM-L6-v2) is bundled in _models/ within the repo.
+    No HuggingFace download needed at runtime. If the bundled model is
+    missing, falls back to attempting a HuggingFace download (which will
+    fail behind the Cowork proxy, triggering TF-IDF fallback).
+    """
 
     def __init__(self):
-        cache_dir = BASE_DIR / ".cache" / "models"
-        cache_dir.mkdir(parents=True, exist_ok=True)
-        os.environ["TRANSFORMERS_CACHE"] = str(cache_dir)
-        os.environ["HF_HOME"] = str(cache_dir)
         from sentence_transformers import SentenceTransformer
-        self.model = SentenceTransformer(MODEL_NAME, cache_folder=str(cache_dir))
+        # Suppress HuggingFace download attempts when using local model
+        os.environ["HF_HUB_OFFLINE"] = "1"
+        os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
+        if MODEL_LOCAL_DIR.exists() and (MODEL_LOCAL_DIR / "config.json").exists():
+            # Load from bundled model directory
+            self.model = SentenceTransformer(str(MODEL_LOCAL_DIR))
+        else:
+            # Bundled model not found, try HuggingFace download (unlikely to work in Cowork)
+            os.environ.pop("HF_HUB_OFFLINE", None)
+            os.environ.pop("TRANSFORMERS_OFFLINE", None)
+            cache_dir = BASE_DIR / ".cache" / "models"
+            cache_dir.mkdir(parents=True, exist_ok=True)
+            self.model = SentenceTransformer(MODEL_NAME, cache_folder=str(cache_dir))
 
     def fit(self, texts: list[str]):
         pass  # Pre-trained, no fitting needed
@@ -353,7 +363,7 @@ CREATE TABLE IF NOT EXISTS meta (
     value TEXT
 );
 
--- Predictions (model tracking — single source of truth for pipeline state)
+-- Predictions (model tracking: single source of truth for pipeline state)
 CREATE TABLE IF NOT EXISTS predictions (
     model_id TEXT PRIMARY KEY,
     question TEXT NOT NULL,
@@ -414,7 +424,7 @@ def export_db_to_workspace():
 def save_prediction(model_id: str, question: str, **kwargs) -> dict:
     """
     Insert or update a prediction record in brain.db.
-    All pipeline state lives here — not in JSON files.
+    All pipeline state lives here, not in JSON files.
 
     Required: model_id, question
     Optional kwargs: model_type, status, quality, quality_reason, progress,
@@ -694,14 +704,20 @@ def _extract_pdf_text(path: Path) -> str:
 
 
 def find_source_files() -> list[Path]:
-    """Find all ingestible source files in the base directory."""
+    """Find all ingestible source files in sources/ only.
+
+    Ingestion scans ONLY the sources/ directory. Files get into sources/
+    via process_inbox(), which moves them from inbox/ to sources/ with
+    clean naming and source IDs. This prevents accidental ingestion of
+    README.md, CLAUDE.md, SKILL.md, AXIOMS.md, demo files, and other
+    repo files that are not user content.
+    """
+    sources_dir = BASE_DIR / "sources"
+    if not sources_dir.exists():
+        return []
     files = []
-    for path in BASE_DIR.rglob("*"):
+    for path in sources_dir.rglob("*"):
         if path.is_dir():
-            continue
-        if any(skip in path.parts for skip in SKIP_DIRS):
-            continue
-        if path.name in SKIP_FILES:
             continue
         if path.name.startswith("."):
             continue
@@ -740,7 +756,7 @@ def ingest_graph_json(conn: sqlite3.Connection):
         return
 
     if not GRAPH_JSON.exists():
-        print("  GRAPH.json not found and DB is empty — no graph data available")
+        print("  GRAPH.json not found and DB is empty, no graph data available")
         return
 
     data = json.loads(GRAPH_JSON.read_text())
@@ -905,7 +921,7 @@ def classify_source_domains(source_id: str, conn: sqlite3.Connection,
     from sklearn.metrics.pairwise import cosine_similarity
     import numpy as np
 
-    # Domain keyword descriptions — used as classification targets
+    # Domain keyword descriptions: used as classification targets
     DOMAIN_DESCRIPTIONS = {
         1: "macroeconomics monetary systems fiscal policy interest rates inflation deflation sovereign debt central banking currency liquidity GDP economic growth bonds treasury yields credit markets financial system banking",
         2: "artificial intelligence machine learning AI agents LLM large language models neural networks deep learning compute scaling AGI automation cognitive augmentation machine cognition transformer models",
@@ -980,7 +996,7 @@ def wire_source_to_domains(source_id: str, domain_nums: list[int],
                 7: "Human Purpose & Meaning",
                 8: "Geopolitics",
                 9: "Meta / Personal",
-                10: "Applied — AI Adoption Consulting",
+                10: "Applied: AI Adoption Consulting",
                 11: "Predictions",
                 12: "Consulting Methodology & Meta-Cognition",
             }
@@ -1074,7 +1090,7 @@ def process_inbox(domains: Optional[dict[str, list[int]]] = None):
     5. Auto-classifies domains using TF-IDF similarity
     6. Wires source nodes to domain nodes in the graph
     7. Exports graph (GRAPH.json + graph-explorer.html)
-    8. Cleans up inbox/ — removes all processed files and empty subdirectories
+    8. Cleans up inbox/: removes all processed files and empty subdirectories
 
     Args:
         domains: Optional mapping of original filename -> list of domain numbers.
@@ -1099,7 +1115,7 @@ def process_inbox(domains: Optional[dict[str, list[int]]] = None):
             inbox_files.append(f)
 
     if not inbox_files:
-        print("Inbox is empty — nothing to process.")
+        print("Inbox is empty, nothing to process.")
         return []
 
     print(f"Found {len(inbox_files)} file(s) in inbox/")
@@ -1164,7 +1180,7 @@ def process_inbox(domains: Optional[dict[str, list[int]]] = None):
     # Export graph (GRAPH.json + graph-explorer.html with dynamic legend)
     export_graph_json()
 
-    # Clean up inbox — remove empty subdirectories (bottom-up)
+    # Clean up inbox: remove empty subdirectories (bottom-up)
     for d in sorted(inbox_dir.rglob("*"), reverse=True):
         if d.is_dir():
             try:
@@ -1253,7 +1269,7 @@ def post_ingest_sync(new_sources: list[dict] = None):
                         domain_nums = item.get("domains", [])
                         if domain_nums:
                             domain_str = ", ".join(str(d) for d in domain_nums)
-                            new_rows.append(f"| {sid} | `sources/{fname}` | {domain_str} | auto-classified — review |")
+                            new_rows.append(f"| {sid} | `sources/{fname}` | {domain_str} | auto-classified (review) |")
                             auto_tagged += 1
                         else:
                             new_rows.append(f"| {sid} | `sources/{fname}` | TBD | TBD |")
@@ -1264,7 +1280,7 @@ def post_ingest_sync(new_sources: list[dict] = None):
 
         index_path.write_text(text)
     else:
-        print("  INDEX.md not found — skipping header update")
+        print("  INDEX.md not found, skipping header update")
 
     # --- 3. Sync S10 (PHILOSOPHICAL-PILLARS.md → sources/S10) ---
     if pillars_path.exists() and s10_path.exists():
@@ -1276,7 +1292,7 @@ def post_ingest_sync(new_sources: list[dict] = None):
         # S10 will be picked up on the next full ingest; for now just note it
         print(f"  Note: S10 synced but will reflect in embeddings on next `python3 brain.py ingest`")
     elif not pillars_path.exists():
-        print("  PHILOSOPHICAL-PILLARS.md not found — skipping S10 sync")
+        print("  PHILOSOPHICAL-PILLARS.md not found, skipping S10 sync")
 
     # --- 4. Print LLM guidance ---
     print("\n=== LLM Review ===")
@@ -1304,7 +1320,7 @@ def post_ingest_sync(new_sources: list[dict] = None):
         print("  Action: Review whether PHILOSOPHICAL-PILLARS.md needs new content for these sources")
         print("  Action: Review whether brain-bootstrap SKILL.md needs updating")
     else:
-        print("  No new sources — no review needed")
+        print("  No new sources, no review needed")
     print("=== Sync Complete ===\n")
 
 
@@ -1632,7 +1648,7 @@ def ingest_prediction_narrative(model_id: str, narrative_path: Optional[str] = N
 
     conn.commit()
 
-    # Generate embeddings — need to refit on full corpus for TF-IDF
+    # Generate embeddings: need to refit on full corpus for TF-IDF
     if all_chunks:
         print(f"  Generating embeddings for {len(all_chunks)} narrative chunks...")
         embedder = get_embedder()
@@ -1853,7 +1869,7 @@ def graph_neighbors(node_id: str, hops: int = 1) -> dict:
 def export_graph_json():
     """Export graph from brain.db to GRAPH.json and update graph-explorer.html.
 
-    GRAPH.json is a derived artifact — brain.db is the source of truth.
+    GRAPH.json is a derived artifact: brain.db is the source of truth.
     This command regenerates both the JSON file and the HTML visualisation.
     """
     data = get_graph_data()

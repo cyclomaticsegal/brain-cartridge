@@ -1,20 +1,21 @@
 #!/usr/bin/env bash
-# bootstrap.sh — Install Python dependencies for brain.py
+# bootstrap.sh - Install Python dependencies for brain.py
 # Run this at the start of each Cowork session (VM resets wipe packages).
 #
 # Usage:
 #   bash /path/to/your-brain-folder/bootstrap.sh
 #
 # What it installs:
-#   - scikit-learn  (TF-IDF embeddings — the working fallback)
-#   - numpy         (vector math)
-#   - sentence-transformers (primary embedder — model download may fail behind proxy)
+#   - numpy          (vector math)
+#   - scikit-learn   (TF-IDF fallback embeddings)
+#   - sentence-transformers (semantic embeddings, uses bundled model from _models/)
 #
 # After running, brain.py is ready for: ingest, search, graph, stats
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MODEL_DIR="${SCRIPT_DIR}/_models/all-MiniLM-L6-v2"
 
 echo "=== Brain Bootstrap ==="
 echo "Installing Python dependencies..."
@@ -22,25 +23,39 @@ echo "Installing Python dependencies..."
 # Core deps (these always work on the VM)
 pip3 install --break-system-packages --quiet numpy scikit-learn 2>&1 | tail -1
 
-# sentence-transformers (model download may fail behind proxy — that's fine,
-# brain.py auto-falls back to TF-IDF)
-pip3 install --break-system-packages --quiet sentence-transformers 2>&1 | tail -1
+# sentence-transformers (the library, not the model - model is bundled in _models/)
+echo "Installing sentence-transformers..."
+if pip3 install --break-system-packages --quiet sentence-transformers 2>&1 | tail -1; then
+    ST_OK=true
+else
+    ST_OK=false
+    echo "  sentence-transformers install failed (will use TF-IDF fallback)"
+fi
 
-# Verify imports work
+# Verify imports
 python3 -c "
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import normalize
 import numpy as np
 print('OK: scikit-learn + numpy ready')
-
-try:
-    from sentence_transformers import SentenceTransformer
-    print('OK: sentence-transformers available (model download may still need proxy)')
-except ImportError:
-    print('WARN: sentence-transformers not available — TF-IDF fallback will be used')
 "
 
-# Quick sanity: can brain.py at least parse?
+if [ "$ST_OK" = true ]; then
+    python3 -c "
+from sentence_transformers import SentenceTransformer
+print('OK: sentence-transformers ready')
+" 2>/dev/null || echo "  sentence-transformers import failed (will use TF-IDF fallback)"
+fi
+
+# Check for bundled model
+if [ -f "${MODEL_DIR}/config.json" ] && [ -f "${MODEL_DIR}/model.safetensors" ]; then
+    echo "OK: Embedding model bundled (all-MiniLM-L6-v2)"
+else
+    echo "NOTE: Embedding model not bundled. Run 'bash download-model.sh' from your"
+    echo "      terminal (outside Cowork) to download it. Using TF-IDF until then."
+fi
+
+# Quick sanity: can brain.py parse?
 python3 -c "import importlib.util; spec = importlib.util.spec_from_file_location('brain', '${SCRIPT_DIR}/brain.py'); print('OK: brain.py loadable')"
 
 echo "=== Bootstrap complete ==="

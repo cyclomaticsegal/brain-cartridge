@@ -36,10 +36,15 @@ A self-contained personal knowledge base engine that runs inside Claude Desktop'
 | `README.md` | Complete user manual. | Reference only |
 | `DEMO-WALKTHROUGH.md` | Guided demo tutorial. | Reference only |
 | `.claude/skills/brain-bootstrap/SKILL.md` | Behaviour layer. Tells Claude how to operate the brain. | Advanced users only |
+| `.claude/skills/cowork-dev-context/SKILL.md` | Development context. Cowork VM architecture, rendering constraints, testing rules. | No |
 | `.claude/skills/demo-brain/SKILL.md` | Demo slash command. Populates brain with sample data. | No |
 | `demo/` | Sample documents for the demo (6 files, 3 domains). | Deletable after demo |
 | `sources/` | Archive of ingested documents. Empty in distribution. | Populated by engine |
 | `inbox/` | Drop zone for new documents. Empty in distribution. | User adds files here |
+
+### Required reading before writing code
+
+**Read `.claude/skills/cowork-dev-context/SKILL.md` before modifying any code.** It contains the full Cowork VM architecture, file system topology, rendering constraints, data schemas, and testing rules. If you skip it, your code will break silently in production. This is especially critical for changes to graph-explorer.html, brain.py, or bootstrap.sh.
 
 ### Development guidelines
 
